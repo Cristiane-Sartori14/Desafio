@@ -3,34 +3,36 @@ let indiceAtual = 0;
 const secoesCarousel = document.querySelectorAll("#carousel-dicas .content-dicas");
 let intervaloRotacao = null;
 
-function mostrarSecao(index) {
+function mostrarSecao(index = 0) {
   secoesCarousel.forEach((secao, i) => {
-    secao.style.display = (filtroAtivo === "todas")
-      ? (i === index ? "flex" : "none")
-      : (secao.querySelector("h2").innerText === filtroAtivo ? "flex" : "none");
+    const categoria = secao.dataset.categoria;
+    if (filtroAtivo === "todas") {
+      secao.style.display = (i === index) ? "flex" : "none"; // carrossel mostra uma de cada vez
+    } else {
+      secao.style.display = (categoria === filtroAtivo) ? "flex" : "none"; // mostra só a categoria
+    }
   });
 }
 
 function proximaSecao() {
-  if (filtroAtivo !== "todas") return;  // Se filtro ativo, não roda carrossel
+  if (filtroAtivo !== "todas") return;
   indiceAtual = (indiceAtual + 1) % secoesCarousel.length;
   mostrarSecao(indiceAtual);
 }
 
 function filtrarCategoria(categoria) {
   filtroAtivo = categoria;
+  clearInterval(intervaloRotacao);
 
   if (filtroAtivo === "todas") {
-    mostrarSecao(indiceAtual);
+    mostrarSecao(indiceAtual); // mostra uma dica (carrossel)
     iniciarCarrossel();
   } else {
-    clearInterval(intervaloRotacao);  // Para o carrossel
-    mostrarSecao(indiceAtual);  // Mostra só o filtro
+    mostrarSecao(); // mostra apenas a categoria selecionada
   }
 }
 
 function iniciarCarrossel() {
-  clearInterval(intervaloRotacao);
   intervaloRotacao = setInterval(proximaSecao, 5000);
 }
 
